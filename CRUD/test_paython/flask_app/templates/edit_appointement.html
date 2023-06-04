@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <title>Edit Appointment</title>
+</head>
+<body>
+    <div class="d-flex justify-content-between m-5">
+        <h5>Edit Appointement</h5>
+        <div>
+            <a href="/logout" class="btn btn-danger">LOGOUT</a>
+        </div>
+    </div>
+    <div class="row text-center m-5">
+        <div class="col-6">
+            <form action="/appoint/{{appoint.id}}/update" method="post">
+                <div class="form-group">
+                    <label for="">Task</label>
+                    <input type="text" name="task" class="form-control" value="{{appoint.task}}">
+                </div>
+                <div class="form-group">
+                    <label for="">Date</label>
+                    <input type="date" name="date" class="form-control" value="{{appoint.date}}">
+                </div>
+                <div class="form-group">
+                    <select name="status" id="status">
+                        <option value="pending">Pending</option>
+                        <option value="missed">Missed</option>
+                        <option value="Done">Done</option>
+                    </select>
+                </div>
+  
+            {%for message in get_flashed_messages()%}
+            <p class="text-danger">{{message}}</p>
+            {%endfor%}
+            <input type="submit" value="Update" class="btn btn-success">
+            <a href="/dashboard"  class="btn btn-success">Cancel</a>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
