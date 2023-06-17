@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Rules</title>
+	<!-- Bootstrap CSS -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css">
+	<style>
+        .navbar{
+            height: 60px;
+            
+        }
+		body {
+			font-family: Arial, sans-serif;
+			font-size: 16px;
+			line-height: 1.5;
+			color: #333;
+		}
+
+		h1 {
+			font-size: 28px;
+			font-weight: bold;
+			margin-bottom: 20px;
+		}
+
+		p {
+			margin-bottom: 20px;
+			text-align: justify;
+		}
+
+		.container {
+			max-width: 960px;
+			margin: 0 auto;
+			padding: auto;
+            padding-top: 90px;
+		}
+
+		.section {
+			margin-bottom: 60px;
+		}
+
+		.section-title {
+			font-size: 24px;
+			font-weight: bold;
+			margin-bottom: 20px;
+		}
+
+		.section-content {
+			font-size: 18px;
+			line-height: 1.5;
+			color: #666;
+		}
+
+		.box {
+			border: 1px solid #ccc;
+			padding: 20px;
+			background-color: #f9f9f9;
+		}
+
+		body{
+            background-image:  url('/static/images1.jpg');
+            background-repeat: no-repeat;
+			
+            
+        }
+		.fixed-bottom{
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+
+
+
+	</style>
+</head>
+<body>
+	<div class="fixed-top">
+        <nav class="navbar navbar-expand-sm navbar-fixed-top bg-muted navbar-dark ">
+            <div class="container-fluid">
+              <a class="navbar-brand" href="/">
+                <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" style="width:120px;">
+              </a>
+            </div>
+            <div class="d-flex">
+                <ul class="navbar-nav  flex-row mt-4">
+                    <li class="nav-item">
+                      <a class="nav-link" href="/about" style="color: #2f62b2">About</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="/" style="color: #2f62b2">Home</a>
+                    </li>
+                    {% if session['user_id'] %}
+                    <li class="nav-item ">
+                        <a href="/user/dashboard"><button class="btn btn-outline-success">Dashboard</button></a>
+                    </li>
+                    <li class="nav-item ">
+                        <a href="/logout"><button class="btn btn-outline-danger">Logout</button></a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a href="/connection"><button class="btn btn-outline-primary">Connection</button></a>
+                    </li>
+                    {% endif %}
+                  </ul> 
+            </div>
+            </div>
+        </nav>
+      </div>
+
+	<div class="container">
+		<div class="section">
+			<h1>Honesty</h1>
+			<div class="section-content box">
+				<p>Honesty is the foundation of our website community. We expect all users to act with integrity, truthfulness, and fairness in their interactions. Misrepresentation, deceit, or any form of dishonesty will not be tolerated. We encourage transparency and open communication, where accurate information is shared and misleading claims are avoided. By upholding honesty, we can establish trust among users and foster an environment built on credibility and reliability.</p>
+			</div>
+		</div>
+		<div class="section">
+			<h1>Respect</h1>
+			<div class="section-content box">
+				<p>Respect is a core value that guides our website community. We emphasize treating others with dignity, empathy, and consideration. We expect users to engage in constructive discussions and refrain from engaging in disrespectful or offensive behavior. Discrimination, harassment, or any form of disrespect towards individuals or groups based on factors such as race, gender, religion, or nationality will not be tolerated. By fostering an atmosphere of respect, we aim to create a welcoming and inclusive space where all users feel valued and safe.</p>
+			</div>
+		</div>
+        <div class="section">
+			<h1>Remark</h1>
+			<div class="section-content box">
+				<p> Note that failure to comply with the rules and laws, such as engaging in disrespectful behavior, violating moral standards, or spreading false information, may result in the deletion of your account. We prioritize the well-being and experience of our users, and such actions can negatively impact others. We encourage responsible and respectful participation to maintain a positive and inclusive environment for all.</p>
+			</div>
+		</div>
+	</div>
+	<div class="fixed-bottom" style="height: 40px;">
+        <p style="color: white;text-align: center;padding: 10px;">© 2023 RateIT. All rights reserved</p>
+      </div>
+
+	<!-- Bootstrap JS -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
