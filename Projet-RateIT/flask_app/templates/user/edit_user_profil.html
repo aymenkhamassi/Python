@@ -33,7 +33,7 @@
             <p class="text-danger">{{message}}</p>
         {%endfor%}
         <h2>{{user.first_name}} Here you are updating your Profil</h2>
-        <form action="/user/{{user.id}}/update" method="post" class="form p-2em">
+        <form action="/user/{{user.id}}/update" method="post" class="form p-2em"  enctype="multipart/form-data">
             <div class="form-row m-3 p-2">
                 <div class="form-group m-3 p-2">
                     <label for="">First Name</label>
@@ -53,7 +53,7 @@
                 </div>
                 <div class="form-group m-3 p-2">
                     <label for="">Avatar</label>
-                    <input type="file" class="form-control" value="{{user.avatar}}" name="avatar">
+                    <input type="file" class="form-control" value="{{user.avatar}}" name="avatar" placeholder="Select a file">
                 </div>
                 
                 <div class="form-group m-3 p-2">

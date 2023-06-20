@@ -1,8 +1,15 @@
-from flask_app import app
+from flask_app import app, UPLOAD_FOLDER
 from flask import render_template,request, redirect, session,flash
 from flask_app.models.review import Review
 from flask_app.models.company import Company
 from flask_app.models.sector import Sector
+
+from werkzeug.utils import secure_filename
+import os
+import urllib.request
+ALLOWED_EXTENSIONS = set(['png','jpg','jpeg','gif'])
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.',1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/sector/<int:sector_id>')
 def show_sector(sector_id):
@@ -21,7 +28,14 @@ def new():
 
 @app.route('/admin/sector/create', methods=["post"])
 def create():
-    Sector.add_sector(request.form)
+    file = request.files['logo']
+    filename = secure_filename(file.filename)
+    file.save(os.path.join("flask_app"+UPLOAD_FOLDER, filename))
+    data = {
+            **request.form,
+            "logo" : filename
+        }
+    Sector.add_sector(data)
     return redirect('/admin/sectors')
 
 @app.route('/admin/sectors')
@@ -36,14 +50,18 @@ def edit(sector_id):
 
 @app.route('/admin/sector/<int:sector_id>/update', methods=['post'])
 def update_sector(sector_id):
-    data =  {
-        **request.form,
-        "id" : sector_id
-    }
+    file = request.files['logo']
+    filename = secure_filename(file.filename)
+    file.save(os.path.join('flask_app'+UPLOAD_FOLDER, filename))
+    data = {
+            **request.form,
+            'id': sector_id,
+            "logo" : filename
+        }
     Sector.edit_sector(data)
     return redirect('/admin/sectors')
 
-@app.route('/admin/sector/<int:sector_id>/delete')
+@app.route('/admin/sector/<int:sector_id>/delete', methods=["post"])
 def delete(sector_id):
    data =  {
         "id" : sector_id

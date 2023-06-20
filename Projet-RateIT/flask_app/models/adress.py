@@ -10,6 +10,7 @@ class Adress:
         self.zipcode=data['zipcode']
         self.created_at=data['created_at']
         self.updated_at=data['updqted_at']
+        self.city_name = ""
     
     @classmethod
     def add_adress(cls, data):
@@ -18,4 +19,11 @@ class Adress:
         VALUES (%(city_ID)s,%(number)s, %(street)s, %(zipcode)s);
         """
         return connectToMySQL(DATABASE).query_db(query, data)
+    
+    @classmethod
+    def get_cities(cls):
+        query = """
+        SELECT ID, name FROM city;
+        """
+        return connectToMySQL(DATABASE).query_db(query)
         

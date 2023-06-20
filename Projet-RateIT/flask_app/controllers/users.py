@@ -1,26 +1,54 @@
-from flask_app import app
-from flask_app import TODAY
-from flask import render_template,request, redirect, session,flash
+from flask_app import app, TODAY, UPLOAD_FOLDER
+from flask import render_template,request, redirect, session,flash, jsonify
 from flask_app.models.user import User
 from flask_app.models.review import Review
 from flask_app.models.company import Company
 from flask_app.models.sector import Sector
+from flask_app.models.adress import Adress
 
 from flask_bcrypt import Bcrypt
 bcrypt = Bcrypt(app)
+
+from werkzeug.utils import secure_filename
+import os
+
+ALLOWED_EXTENSIONS = set(['png','jpg','jpeg','gif'])
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.',1)[1].lower() in ALLOWED_EXTENSIONS
 
 # Home page
 @app.route('/')
 def index():
     sectors = Sector.get_all()
-    companies = Company.get_all()
+    companies = Company.get_for_index()
     return render_template('index.html', sectors=sectors, companies=companies)
+
+@app.route('/about_us')
+def about():
+    return render_template('abouts.html')
+
+@app.route('/rules')
+def rule():
+    return render_template('rules.html')
+
+@app.route('/search', methods=["post"])
+def search():
+    word = request.form['word']
+    data = {
+        'word':"%"+word+"%"
+    }
+    sectors = Sector.search(data)
+    print(sectors,"//**//"*20)
+    companies = Company.search(data)
+    reviews = Review.search(data)
+    return render_template('search.html', sectors=sectors, companies=companies, reviews=reviews, word=word)
 
 # LogReg
 @app.route('/connection')
 def logreg():
     sectors = Sector.get_all()
-    return render_template("login.html", sectors = sectors)
+    cities = Adress.get_cities()
+    return render_template("login.html", sectors = sectors, cities=cities)
 
 
 @app.route('/company/dashboard')
@@ -61,9 +89,15 @@ def admindashboard():
 def register():
     if not User.validate(request.form):
         return redirect('/connection')
+    
+    file = request.files['avatar']
+    filename = secure_filename(file.filename)
+    file.save(os.path.join('flask_app'+UPLOAD_FOLDER, filename))
+    
     data={
         **request.form,
-        'password':bcrypt.generate_password_hash(request.form['password'])
+        'password':bcrypt.generate_password_hash(request.form['password']),
+        'avatar': filename
     }
     user = User.create_user(data)
     session['user_id'] = user
@@ -94,20 +128,35 @@ def edit_profil(user_id):
 
 @app.route('/user/<int:user_id>/update', methods=["post"])
 def update_user(user_id):
-    print(request.form,'*/*'*20)
-    # if not User.validate(request.form):
-    #     return redirect(f'/edit_profil/{user_id}')
-    if request.form['newpsw'] == request.form['confnewpsw']:
+
+    file = request.files['avatar']
+    filename = secure_filename(file.filename)
+    file.save(os.path.join('flask_app'+UPLOAD_FOLDER, filename))
+
+    if request.form['newpsw']:
+        if request.form['newpsw'] == request.form['confnewpsw']:
+            data = {
+                **request.form,
+                'id': user_id,
+                'avatar': filename,
+                'password':bcrypt.generate_password_hash(request.form['newpsw'])
+            }
+            User.update_user(data)
+            return redirect('/user/dashboard')
+        else:
+            flash("Your are not sure about your password?!")
+            return redirect(f'/edit_profil/{user_id}')
+    else:
+        user = User.get_by_id({'id': user_id})
         data = {
             **request.form,
             'id': user_id,
-            'password':bcrypt.generate_password_hash(request.form['newpsw'])
+            'avatar': filename,
+            'password': user.password
         }
         User.update_user(data)
         return redirect('/user/dashboard')
-    else:
-        flash("Your are not sure about your password?!")
-        return redirect(f'/edit_profil/{user_id}')
+        
 
 @app.route('/admin/users')
 def see_all_users():
@@ -120,12 +169,14 @@ def logout():
     return redirect('/')
 
 
-
-@app.route('/rules')
-def rules():
-    return render_template("rules.html")
-
-
-@app.route('/about')
-def about():
-    return render_template("abouts.html")
+# Ajax route to update user status
+@app.route('/update_status', methods=['POST'])
+def update_status():
+    user_id = int(request.form['user_id'])
+    new_status = int(request.form['new_status'])
+    data = {
+        'id': user_id,
+        'actif': new_status
+    }
+    User.update_status(data)
+    return jsonify(success=True)

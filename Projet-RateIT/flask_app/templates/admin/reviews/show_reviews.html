@@ -54,13 +54,13 @@
                   <td>{{review.created_at}}</td>
                   
                   <td><button class="btn"><i class="fa fa-edit"></i> </button> | <!-- Button trigger modal -->
-                    <button class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    <button class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal{{review.id}}">
                       <i class="fa fa-trash"></i>
                       </button>
                       
                       
                       <!-- Modal -->
-                      <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                      <div class="modal fade" id="exampleModal{{review.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div class="modal-dialog">
                           <div class="modal-content">
                             <div class="modal-header">

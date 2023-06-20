@@ -1,7 +1,14 @@
-from flask_app import app
+from flask_app import app, UPLOAD_FOLDER
 from flask import render_template,request, redirect, session,flash
 from flask_app.models.review import Review
 from flask_app.models.company import Company
+
+from werkzeug.utils import secure_filename
+import os
+
+ALLOWED_EXTENSIONS = set(['png','jpg','jpeg','gif'])
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.',1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 @app.route('/reviews/new')
@@ -11,11 +18,14 @@ def new_review():
 
 @app.route('/review/create', methods=["post"])
 def add_review():
+    file = request.files['photo']
+    filename = secure_filename(file.filename)
+    file.save(os.path.join("flask_app"+UPLOAD_FOLDER, filename))
     data = {
             **request.form,
-            "user_id" : session["user_id"]
+            "user_id" : session["user_id"],
+            "photo" : filename
         }
-    print(data)
     Review.add_review(data)
     return redirect('/user/dashboard')
 
@@ -30,9 +40,13 @@ def edit_rev(review_id):
 
 @app.route('/review/<int:review_id>/update', methods=["post"])
 def user_updating(review_id):
+    file = request.files['photo']
+    filename = secure_filename(file.filename)
+    file.save(os.path.join("flask_app"+UPLOAD_FOLDER, filename))
     data ={
         **request.form,
-        'id': review_id
+        'id': review_id,
+        'photo': filename
     }
     Review.edit_review(data)
     return redirect('/user/dashboard')

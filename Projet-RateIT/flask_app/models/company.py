@@ -1,5 +1,5 @@
 from flask_app.config.mysqlconnection import connectToMySQL
-from flask_app import DATABASE
+from flask_app import DATABASE, UPLOAD_FOLDER
 from flask import flash
 import re
 EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$')
@@ -15,12 +15,13 @@ class Company:
         self.name = data['name']
         self.email = data['email']
         self.password = data['password']
-        self.logo = data['logo']
+        self.logo = UPLOAD_FOLDER+str(data['logo'])
         self.site = data['site']
         self.mf=data['mf']
         self.created_at = data['created_at']
         self.updated_at = data['updated_at']
         self.sector = ""
+        self.adress = ""
 
 #--------CRUD
 #--------READ ALL COMPANIES
@@ -52,7 +53,7 @@ class Company:
     @classmethod
     def edit_company(cls, data):
         query = """
-        UPDATE companies SET sector_id = %(sector_id)s, email = %(email)s, name= %(name)s,logo=%(logo)s,site=%(site)s,mf=%(mf)s, password=%(newpsw)s 
+        UPDATE companies SET sector_id = %(sector_id)s, email = %(email)s, name= %(name)s,logo=%(logo)s,site=%(site)s,mf=%(mf)s, password=%(password)s 
         WHERE id = %(id)s;
         """
         return connectToMySQL(DATABASE).query_db(query, data)
@@ -116,6 +117,41 @@ class Company:
         query="SELECT COUNT(*) AS companies_number FROM companies;"
         result = connectToMySQL(DATABASE).query_db(query)
         return result[0]['companies_number']
+    
+    @classmethod
+    def search(cls, data):
+        query=""" SELECT companies.*, sectors.title as sector 
+        FROM companies JOIN sectors
+        ON sector_id = sectors.id
+        WHERE name like %(word)s;
+        """
+        results = connectToMySQL(DATABASE).query_db(query,data)
+        result = []
+        if results:
+            for row in results:
+                comp = cls(row)
+                comp.sector = row["sector"]
+                result.append(comp)
+        return result
+
+    @classmethod
+    def get_for_index(cls):
+        query=""" 
+        SELECT companies.*, sectors.title as sector, 
+        CONCAT(adresses.number," ",adresses.street," ",adresses.zipcode) AS adress FROM companies 
+        JOIN sectors ON sector_id = sectors.id
+        JOIN adresses ON adress_id = adresses.id
+        ORDER BY companies.created_at DESC LIMIT 6;
+        """
+        results = connectToMySQL(DATABASE).query_db(query)
+        result = []
+        if results:
+            for row in results:
+                comp = cls(row)
+                comp.sector = row["sector"]
+                comp.adress = row["adress"]
+                result.append(comp)
+        return result
 
     @staticmethod
     def validate(data):

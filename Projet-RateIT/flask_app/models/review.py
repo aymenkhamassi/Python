@@ -1,5 +1,5 @@
 from flask_app.config.mysqlconnection import connectToMySQL
-from flask_app import DATABASE
+from flask_app import DATABASE, UPLOAD_FOLDER
 from flask import flash
 #--------CLASS REVIEW
 class Review:
@@ -11,7 +11,7 @@ class Review:
         self.title = data ['title']
         self.feedback = data['feedback']
         self.rate = data['rate']
-        self.photo = data['photo']
+        self.photo = UPLOAD_FOLDER+data['photo']
         self.created_at = data['created_at']
         self.updated_at = data['updated_at']
         self.name = ""
@@ -122,4 +122,14 @@ class Review:
         query="SELECT COUNT(*) as reviews_number FROM reviews;"
         result = connectToMySQL(DATABASE).query_db(query)
         return result[0]['reviews_number']
+    
+    @classmethod
+    def search(cls, data):
+        query=" SELECT * FROM reviews where (title LIKE %(word)s) or (feedback LIKE %(word)s) ;"
+        results = connectToMySQL(DATABASE).query_db(query,data)
+        result = []
+        if results:
+            for row in results:
+                result.append(cls(row))
+        return result
     

@@ -1,5 +1,5 @@
 from flask_app.config.mysqlconnection import connectToMySQL
-from flask_app import DATABASE
+from flask_app import DATABASE, UPLOAD_FOLDER
 from flask import flash
 import re
 EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$')
@@ -13,7 +13,7 @@ class User :
         self.pseudo = data['pseudo']
         self.email = data['email']
         self.password = data['password']
-        self.avatar = data['avatar']
+        self.avatar = UPLOAD_FOLDER + data['avatar']
         self.is_admin =data['is_admin']
         self.actif = data['actif']
         self.created_at = data['created_at']
@@ -79,6 +79,11 @@ class User :
         query="SELECT COUNT(*) AS users_number FROM users;"
         result = connectToMySQL(DATABASE).query_db(query)
         return result[0]['users_number']
+    
+    @classmethod
+    def update_status(cls, data):
+        query="UPDATE users SET actif = %(actif)s WHERE id = %(id)s;"
+        return connectToMySQL(DATABASE).query_db(query,data)
 
     
     #--------VALIDATION

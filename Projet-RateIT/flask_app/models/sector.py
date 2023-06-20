@@ -1,13 +1,13 @@
 from flask_app.config.mysqlconnection import connectToMySQL
-from flask_app import DATABASE
+from flask_app import DATABASE,UPLOAD_FOLDER
 from flask import flash
 #--------CLASS SECTOR
 class Sector:
 #--------CONSTRUCTOR
-    def init(self,data):
+    def __init__(self, data):
         self.id = data['id']
         self.title = data['title']
-        self.logo = data['logo']
+        self.logo = UPLOAD_FOLDER+data['logo']
         self.created_at = data['created_at']
         self.updated_at = data['updated_at']
 #------CRUD
@@ -16,9 +16,14 @@ class Sector:
     @classmethod
     def get_all(cls):
         query= """
-        SELECT * FROM sectors ;
+        SELECT * FROM sectors;
         """
-        return connectToMySQL(DATABASE).query_db(query) 
+        results = connectToMySQL(DATABASE).query_db(query)
+        result = []
+        if results:
+            for row in results:
+                result.append(cls(row))
+        return  result
 
     #------CREATE SECTOR
     @classmethod
@@ -60,3 +65,13 @@ class Sector:
         query="SELECT COUNT(*) AS sectors_number FROM sectors;"
         result = connectToMySQL(DATABASE).query_db(query)
         return result[0]['sectors_number']
+    
+    @classmethod
+    def search(cls, data):
+        query=" SELECT * FROM sectors where title like %(word)s; "
+        results = connectToMySQL(DATABASE).query_db(query,data)
+        # result = []
+        # if results:
+        #     for row in results:
+        #         result.append(cls(row))
+        return results

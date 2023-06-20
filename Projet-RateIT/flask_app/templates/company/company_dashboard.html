@@ -27,13 +27,18 @@
         </div>
     </nav>
     <div class="container">
+        <div class="avatar">
+            <center>
+            <img src="{{company.logo}}" class="rounded-circle" style="width: 150px;" alt="Logo"/>
+            </center>
+        </div>
         <p>
         <div class="d-flex justify-content-between align-items-baseline">
-            <h2>Welcome </h2> <h1>{{company.name}}</h1>
-            <button class="btn btn-secondary">Contact Us</button>
+            <h2>Welcome </h2><h1>{{company.name}}</h1>
+            <a href="/about_us"></a><button class="btn btn-secondary">Contact Us</button>
         </div>
         {% if session['user_id'] %}
-        <h5>Here you can see, create, update or even delete your reviews</h5>
+        <h5>Here you can see all the reviews about you:</h5>
         </p>
         <div class="container reviews">
             <table class="table table-striped">

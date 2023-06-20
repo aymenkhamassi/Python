@@ -32,7 +32,7 @@
       </ul>
 
     <div class="container" style="margin-top: 30px;">
-        <form action="/admin/sector/{{sector.id}}/update" method="post" class="form p-2em">
+        <form action="/admin/sector/{{sector.id}}/update" method="post" class="form p-2em" enctype="multipart/form-data">
             <div class="form-row m-3 p-2">
                 <div class="form-group m-3 p-2">
                     <label for="">Title</label>
@@ -40,7 +40,7 @@
                 </div>
                 <div class="form-group m-3 p-2">
                     <label for="">Logo</label>
-                    <input type="file" name="logo" id="" class="form-control" value="{{sector.logo}}">
+                    <input type="file" name="logo" id="logo" class="form-control" value="{{sector.logo}}">
                 </div>
             </div>
             
